@@ -34,8 +34,14 @@ namespace NBTReader.Core
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RunOptions)
                 .WithNotParsed(HandleParseError);
-            var fileStream = !stdin ? new FileStream(_filename, FileMode.Open) : Console.OpenStandardInput();
-            TagReader tagReader = new BinaryTagReader(fileStream);
+            Stream stream;
+            if (stdin) {
+            	stream = new GZipStream(Console.OpenStandardInput(), CompressionMode.Decompress);
+            }
+            else {
+            	stream = new FileStream(_filename, FileMode.Open);
+            }
+            TagReader tagReader = new BinaryTagReader(stream);
             var root = tagReader.ReadDocument();
             Console.Out.Write(NbtFormatter.Format(root,0, _indents));
         }
