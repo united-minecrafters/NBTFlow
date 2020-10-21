@@ -14,6 +14,7 @@ namespace NBTReader.Core
     {
         private static string _filename;
         private static int _indents;
+        private static bool stdin;
 
         public class Options
         {
@@ -23,6 +24,9 @@ namespace NBTReader.Core
             [Option('i', "indent", Default = 1)]
             public int IndentSize { get; set; }
 
+            [Option('s', "stdin", Default=false)]
+            public bool stdin {get; set;}
+
         }
 
         public static void Main(string[] args)
@@ -30,7 +34,7 @@ namespace NBTReader.Core
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RunOptions)
                 .WithNotParsed(HandleParseError);
-            var fileStream = new FileStream(_filename, FileMode.Open);
+            var fileStream = !stdin ? new FileStream(_filename, FileMode.Open) : Console.OpenStandardInput();
             TagReader tagReader = new BinaryTagReader(fileStream);
             var root = tagReader.ReadDocument();
             Console.Out.Write(NbtFormatter.Format(root,0, _indents));
@@ -40,6 +44,7 @@ namespace NBTReader.Core
         {
             _filename = opts.FileName;
             _indents = opts.IndentSize;
+            stdin = opts.stdin;
         }
         static void HandleParseError(IEnumerable<Error> errs)
         {
