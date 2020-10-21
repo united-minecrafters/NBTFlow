@@ -40,7 +40,7 @@ namespace NBTReader.Core
                 case TagType.List:
                     return $"{new string(' ', indent*size)}{tag.Name.Trim()}: {tag.GetValue()}";
                 case TagType.Compound:
-                    TagCompound tagCompound = (TagCompound) tag;
+                    TagCompound tagCompound = tag as TagCompound;
                     StringBuilder stringBuilder = new StringBuilder($"{new string(' ', indent*size)}{tag.Name.Trim()}:\n");
                     for (int i = 0; i < tagCompound.Count; i++)
                         stringBuilder.AppendLine($"{Format(tagCompound[i], indent + 1, size)}");
