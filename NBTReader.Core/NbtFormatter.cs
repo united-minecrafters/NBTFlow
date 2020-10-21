@@ -52,8 +52,9 @@ namespace NBTReader.Core
                 case TagType.None:
                     return "";
                 case TagType.IntArray:
+                    TagIntArray tagIntArray = (TagIntArray) tag;
                     return
-                        $"{new string(' ', indent*size)}{tag.Name.Trim()}: {tag.Flatten().Select(child => child.GetValue()).Aggregate((working, next) => working + "," + next)}";
+                        $"{new string(' ', indent*size)}{tag.Name.Trim()}: {FormatArray(tagIntArray.Value)}";
             }
 
             return tag.ToString();
@@ -61,7 +62,11 @@ namespace NBTReader.Core
 
         static string FormatArray(int[] ar)
         {
-            return ar.ToArray().Cast<string>().Aggregate((working, next) => working + "," + next);
+            if (ar.Length == 0)
+                return "[ ]";
+            return "[" + ar.ToArray().
+                Select(x => x.ToString()).
+                Aggregate((working, next) => working + ", " + next) + "]";
         }
     }
 }
