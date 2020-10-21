@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -53,20 +54,20 @@ namespace NBTReader.Core
                     return "";
                 case TagType.IntArray:
                     TagIntArray tagIntArray = (TagIntArray) tag;
-                    return
-                        $"{new string(' ', indent*size)}{tag.Name.Trim()}: {FormatArray(tagIntArray.Value)}";
+                    if (((IReadOnlyCollection<int>) tagIntArray.Value).Count == 0)
+                        return
+                            $"{new string(' ', indent * size)}{tag.Name.Trim()}: [ ]";
+                    else
+                        return
+                            $"{new string(' ', indent * size)}{tag.Name.Trim()}: [" +
+                            tagIntArray.Value.ToArray().Select(x => x.ToString())
+                                .Aggregate((working, next) => working + ", " + next) + "]";
+                    
+
+
             }
 
             return tag.ToString();
-        }
-
-        static string FormatArray(int[] ar)
-        {
-            if (ar.Length == 0)
-                return "[ ]";
-            return "[" + ar.ToArray().
-                Select(x => x.ToString()).
-                Aggregate((working, next) => working + ", " + next) + "]";
         }
     }
 }
